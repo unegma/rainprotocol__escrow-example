@@ -1,5 +1,5 @@
 {
-  "name": "javascript-importmap-template",
+  "name": "escrow-example",
   "type": "module",
   "version": "1.0.0",
   "description": "",
@@ -7,7 +7,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "npx serve",
-    "DEPLOY": "aws --profile myprofile s3 sync --delete ./ s3://mydeploymenturl --exclude '.git/*' --exclude '.idea/*'"
+    "DEPLOY": "aws --profile unegma s3 sync --delete ./ s3://rain-escrow.unegma.work/ --exclude '.git/*' --exclude '.idea/*'"
   },
   "author": "tim@unegma.com",
   "license": "ISC"

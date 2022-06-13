@@ -1,26 +1,16 @@
-import { ethers, BigNumber } from "ethers";
+import * as rainSDK from "rain-sdk"; // rain SDK imported using importmap in index.html (or in package.json)
+import { ethers } from "ethers"; // ethers library imported using importmap in index.html (or in package.json)
+import { connect } from "./connect.js"; // a very basic web3 connection implementation
 
-export async function example() {
-  const CHAIN_ID = 80001; // Polygon Mumbai Testnet
-  
+/**
+ * Escrow Example
+ * Tutorial: https://docs.rainprotocol.xyz
+ * @returns {Promise<void>}
+ */
+export async function escrowExample() {
+
   try {
-    const {ethereum} = window;
-
-    if (!ethereum) {
-      console.log("No Web3 Wallet installed");
-    }
-
-    const provider = new ethers.providers.Web3Provider(ethereum, {
-      name: 'Mumbai',
-      chainId: CHAIN_ID,
-    });
-
-    // Prompt user for account connections (please note this is very bare bones)
-    await provider.send("eth_requestAccounts", []);
-    const signer = provider.getSigner();
-    const address = await signer.getAddress(); // your wallet address
-    console.log(`Signer:`, signer);
-    console.log(`Address: ${address}`);
+    const { signer, address } = await connect(); // get the signer and account address using a very basic connection implementation
     
     // *** Code Goes Here ***
     
@@ -29,4 +19,4 @@ export async function example() {
   }
 }
 
-example();
+escrowExample();
