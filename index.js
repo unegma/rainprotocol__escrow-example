@@ -14,6 +14,15 @@ export async function escrowExample() {
     
     // *** Code Goes Here ***
 
+    // I'm writing a piece to show how the escrow works, and I will need the user to create an erc20 token as part of that process.
+    //
+    // They will:
+    // 1. mint an erc20 token
+    // 2. add it to an existing sale which they created in another tutorial
+    // 3. close the sale
+    // 4. see the erc20 token get added to their wallet from the escrow
+
+
 
 
     
