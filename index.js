@@ -31,7 +31,8 @@ export async function escrowExample() {
     // constants
 
     // TODO PUT YOUR SALE ADDRESS HERE
-    const SALE_ADDRESS = '0xcaed7C5344b0755f282c71259E4556bA23dD3450';
+    // const SALE_ADDRESS = '0xcaed7C5344b0755f282c71259E4556bA23dD3450';
+    const SALE_ADDRESS = '0x1F73226Ea909A3e681ba39A7418C9EfAfEb96A2d'; // a closed sale from which you own an rTKN
     // TODO PUT YOUR SALE ADDRESS HERE
 
     const EXAMPLE_ERC20_DECIMALS = 18; // See here for more info: https://docs.openzeppelin.com/contracts/3.x/erc20#a-note-on-decimals
@@ -47,7 +48,7 @@ export async function escrowExample() {
       allowDelegatedClaims: false, // can mint on behalf of someone else
       erc20Config: {
         name: 'inStore15PercentOffVoucher',
-        symbol: 'inStoreVoucher',
+        symbol: 'iSV15',
         distributor: address, // initialSupply is given to the distributor during the deployment of the emissions contract
         initialSupply: ethers.utils.parseUnits(EXAMPLE_ERC20_INITIAL_SUPPLY.toString(), EXAMPLE_ERC20_DECIMALS), // TODO CHECK UNDERSTANDING HOW TO LIMIT CORRECTLY, AND TO WHERE THIS GOES ON DEPLOYING THE CONTRACT (distributor?)
       },
