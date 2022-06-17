@@ -97,12 +97,14 @@ export async function escrowExample() {
 
     console.log('------------------------------'); // separator
 
-    console.log('### Section 3: Close Sale');
-    console.log('Info: Ending The Sale.');
-    const saleContract = new rainSDK.Sale(SALE_ADDRESS, signer);
-    const endStatusTransaction = await saleContract.end();
-    const endStatusReceipt = await endStatusTransaction.wait();
-    console.log('Info: Sale Ended Receipt:', endStatusReceipt);
+    // todo explain why close sale isn't needed
+
+    // console.log('### Section 3: Close Sale');
+    // console.log('Info: Ending The Sale.');
+    // const saleContract = new rainSDK.Sale(SALE_ADDRESS, signer);
+    // const endStatusTransaction = await saleContract.end();
+    // const endStatusReceipt = await endStatusTransaction.wait();
+    // console.log('Info: Sale Ended Receipt:', endStatusReceipt);
 
     // todo call sweep function to move tokens from pending to deposit
 
