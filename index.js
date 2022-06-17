@@ -70,10 +70,6 @@ export async function escrowExample() {
 
     console.log('------------------------------'); // separator
 
-    console.log('Info: Token Deposit Receipt:', depositReceipt);
-
-    console.log('------------------------------'); // separator
-
     console.log('Info: Ending The Sale.');
     const saleContract = new rainSDK.Sale(SALE_ADDRESS, signer);
     const endStatusTransaction = await saleContract.end();
