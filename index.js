@@ -77,15 +77,11 @@ export async function escrowExample() {
 
 
     // todo approve erc20 spend amount, escrow address as the spender, and amount of tokens to spend
-    // console.log(`Info: Connecting to Reserve token for approval of spend:`, RESERVE_TOKEN_ADDRESS);
-    // const reserveContract = new rainSDK.ERC20(RESERVE_TOKEN_ADDRESS, signer)
-    // const approveTransaction = await reserveContract.approve(saleContract.address, DESIRED_UNITS_OF_REDEEMABLE);
-    // const approveReceipt = await approveTransaction.wait();
-    // console.log(`Info: ReserveContract:`, reserveContract);
-    // console.log(`Info: Approve Receipt:`, approveReceipt);
-
-
-    const depositTransaction = await redeemableERC20ClaimEscrow.deposit( // todo change to pending deposit
+    console.log(`Info: Connecting to ERC20 token for approval of spend:`, TOKEN_ADDRESS);
+    const approveTransaction = await erc20.approve(redeemableERC20ClaimEscrow.address, EXAMPLE_ERC20_AMOUNT_TO_DEPOSIT);
+    const approveReceipt = await approveTransaction.wait();
+    console.log(`Info: Approve Receipt:`, approveReceipt);
+    const depositTransaction = await redeemableERC20ClaimEscrow.deposit( // todo change to pending deposit if sale is running
       ethers.utils.parseUnits(EXAMPLE_ERC20_AMOUNT_TO_DEPOSIT.toString(), EXAMPLE_ERC20_DECIMALS)
     );
     const depositReceipt = await depositTransaction.wait();
