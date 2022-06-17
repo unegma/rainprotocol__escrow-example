@@ -8,6 +8,9 @@ import { connect } from "./connect.js"; // a very basic web3 connection implemen
  * @returns {Promise<void>}
  */
 export async function escrowExample() {
+
+  // todo you will need to have completed the sale tutorial, purchased an item, and then closed the sale in order to use this example
+
   try {
     const { signer, address } = await connect(); // get the signer and account address using a very basic connection implementation
 
@@ -71,50 +74,28 @@ export async function escrowExample() {
     console.log('------------------------------'); // separator
 
     console.log('### Section 2: Add Token to Escrow and Link to Sale');
-    console.log("Info: Adding token to escrow and linking to your Sale (be aware that anyone can do this for your Sale, when a sale is deployed, it is out for all to see):", TOKEN_ADDRESS);
+    console.log("Info: Adding token to escrow and linking to your Sale (be aware that anyone can do this for your Sale):", TOKEN_ADDRESS);
     const redeemableERC20ClaimEscrow = await rainSDK.RedeemableERC20ClaimEscrow.get(SALE_ADDRESS, TOKEN_ADDRESS, signer);
     console.log('Info: redeemableERC20ClaimEscrow:', redeemableERC20ClaimEscrow);
 
-
-    // todo approve erc20 spend amount, escrow address as the spender, and amount of tokens to spend
     console.log(`Info: Connecting to ERC20 token for approval of spend:`, TOKEN_ADDRESS);
     const approveTransaction = await erc20.approve(redeemableERC20ClaimEscrow.address, EXAMPLE_ERC20_AMOUNT_TO_DEPOSIT);
     const approveReceipt = await approveTransaction.wait();
     console.log(`Info: Approve Receipt:`, approveReceipt);
-    const depositTransaction = await redeemableERC20ClaimEscrow.deposit( // todo change to pending deposit if sale is running
+    const depositTransaction = await redeemableERC20ClaimEscrow.deposit( // change to pending deposit if sale is running, need to 'sweep' afterwards to move tokens from pending to deposit
       ethers.utils.parseUnits(EXAMPLE_ERC20_AMOUNT_TO_DEPOSIT.toString(), EXAMPLE_ERC20_DECIMALS)
     );
     const depositReceipt = await depositTransaction.wait();
     console.log('Info: Token Deposit Receipt:', depositReceipt);
 
-    // todo and what is the sweep
-    // pending deposit is for when the sale has not started or is ongoing/active (can only do pending deposit, not deposit)
-
-
+    console.log('------------------------------'); // separator
 
     // todo change raise complete parameters
-
-
-    console.log('------------------------------'); // separator
-
     // todo explain why close sale isn't needed
-
-    // console.log('### Section 3: Close Sale');
-    // console.log('Info: Ending The Sale.');
-    // const saleContract = new rainSDK.Sale(SALE_ADDRESS, signer);
-    // const endStatusTransaction = await saleContract.end();
-    // const endStatusReceipt = await endStatusTransaction.wait();
-    // console.log('Info: Sale Ended Receipt:', endStatusReceipt);
-
-    // todo call sweep function to move tokens from pending to deposit
-
-    //todo change distributionEndForwardingAddress to an address so the claimers can take only 1 from escrow when making the claim //distributionEndForwardingAddress: "0x0000000000000000000000000000000000000000" // the rTKNs that are not sold get forwarded here (0x00.. will burn them)
-
+    // todo change distributionEndForwardingAddress to an address so the claimers can take only 1 from escrow when making the claim //distributionEndForwardingAddress: "0x0000000000000000000000000000000000000000" // the rTKNs that are not sold get forwarded here (0x00.. will burn them)
     // todo add sdk version to videos
 
-    console.log('------------------------------'); // separator
-
-    console.log('### Section 4: Withdrawing Token');
+    console.log('### Section 3: Withdrawing Token');
     console.log(`Info: you should now be able to claim your token ${TOKEN_ADDRESS}:`);
     const withdrawTransaction = await redeemableERC20ClaimEscrow.withdraw(
       ethers.utils.parseUnits(EXAMPLE_ERC20_AMOUNT_TO_DEPOSIT.toString(), EXAMPLE_ERC20_DECIMALS)
