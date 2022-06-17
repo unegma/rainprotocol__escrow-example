@@ -9,6 +9,8 @@ import { connect } from "./connect.js"; // a very basic web3 connection implemen
  */
 export async function escrowExample() {
 
+  // todo maybe warn users they will need to have X matic in their wallet in order to complete ALL the transactions
+
   // todo you will need to have completed the sale tutorial, purchased an item, and then closed the sale in order to use this example
 
   try {
