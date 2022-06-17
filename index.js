@@ -17,7 +17,14 @@ export async function escrowExample() {
       "This example consists of X Transactions:\n\n"
     );
 
+    console.log('------------------------------'); // separator
+
+    console.warn('Info: BEFORE DOING THIS TUTORIAL, MAKE SURE YOU HAVE CREATED (AND NOT CLOSED) A SALE FROM THE PREVIOUS TUTORIAL AND ADDED THE ADDRESS TO: \n`const SALE_ADDRESS = \'myAddressFromOtherTutorial\';`');
+
+    console.log('------------------------------'); // separator
+
     // constants
+
     // TODO PUT YOUR SALE ADDRESS HERE
     const SALE_ADDRESS = 'myAddressFromOtherTutorial';
     // TODO PUT YOUR SALE ADDRESS HERE
@@ -42,12 +49,6 @@ export async function escrowExample() {
         argumentsLength: []
       }
     };
-
-    console.log('------------------------------'); // separator
-
-    console.warn('Info: BEFORE DOING THIS TUTORIAL, MAKE SURE YOU HAVE CREATED A SALE FROM THE PREVIOUS TUTORIAL (MAKE SURE YOU DID NOT CLOSE IT)');
-
-    console.log('------------------------------'); // separator
 
     console.log('### Section 1: Mint erc20 Token');
     console.log("Info: Minting new ERC20 with the following state:", emissionsERC20Config);
