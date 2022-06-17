@@ -26,23 +26,29 @@ export async function escrowExample() {
     // constants
 
     // TODO PUT YOUR SALE ADDRESS HERE
-    const SALE_ADDRESS = 'myAddressFromOtherTutorial';
+    const SALE_ADDRESS = '0xcaed7C5344b0755f282c71259E4556bA23dD3450';
     // TODO PUT YOUR SALE ADDRESS HERE
 
     const EXAMPLE_ERC20_DECIMALS = 18; // See here for more info: https://docs.openzeppelin.com/contracts/3.x/erc20#a-note-on-decimals
-    const EXAMPLE_ERC20_INITIAL_SUPPLY = 100;
+    const EXAMPLE_ERC20_INITIAL_SUPPLY = 10;
     const EXAMPLE_ERC20_AMOUNT_TO_DEPOSIT = 10;
 
+    // can add to escrow when sale is complete,
+    // a. check the supply of rTKN when a sale is complete
+    // b. deposit an amount of erc20 tokens based on that number into an escrow
+    // c. users can only claim 1 token each
+
     const emissionsERC20Config = {
-      allowDelegatedClaims: true, // todo what is this?
+      allowDelegatedClaims: false, // can mint on behalf of someone else
       erc20Config: {
-        name: 'Example Token',
-        symbol: 'eTKN',
-        distributor: '0x0000000000000000000000000000000000000000',
+        name: 'inStore15PercentOffVoucher',
+        symbol: 'inStoreVoucher',
+        distributor: address, // initialSupply is given to the distributor during the deployment of the emissions contract
         initialSupply: ethers.utils.parseUnits(EXAMPLE_ERC20_INITIAL_SUPPLY.toString(), EXAMPLE_ERC20_DECIMALS), // TODO CHECK UNDERSTANDING HOW TO LIMIT CORRECTLY, AND TO WHERE THIS GOES ON DEPLOYING THE CONTRACT (distributor?)
       },
       vmStateConfig: {
-        constants: [1], // mint 1 at a time (infinitely), if set to 10, will mint 10 at a time, no more no less (infinitely)
+        // setting to 0 will fix intitial supply when the claim function is called
+        constants: [0], // mint 1 at a time (infinitely), if set to 10, will mint 10 at a time, no more no less (infinitely)
         sources: [
           ethers.utils.concat([
             rainSDK.utils.op(rainSDK.Sale.Opcodes.VAL, 0),
@@ -56,6 +62,9 @@ export async function escrowExample() {
     console.log('### Section 1: Mint erc20 Token');
     console.log("Info: Minting new ERC20 with the following state:", emissionsERC20Config);
     const erc20 = await rainSDK.EmissionsERC20.deploy(signer, emissionsERC20Config);
+
+    // todo claim function will mint another token (in addition to initial supply)
+
     console.log('Result: erc20:', erc20);
     const TOKEN_ADDRESS = erc20.address;
 
@@ -65,11 +74,30 @@ export async function escrowExample() {
     console.log("Info: Adding token to escrow and linking to your Sale (be aware that anyone can do this for your Sale, when a sale is deployed, it is out for all to see):", TOKEN_ADDRESS);
     const redeemableERC20ClaimEscrow = await rainSDK.RedeemableERC20ClaimEscrow.get(SALE_ADDRESS, TOKEN_ADDRESS, signer);
     console.log('Info: redeemableERC20ClaimEscrow:', redeemableERC20ClaimEscrow);
-    const depositTransaction = await redeemableERC20ClaimEscrow.deposit(
+
+
+    // todo approve erc20 spend amount, escrow address as the spender, and amount of tokens to spend
+    // console.log(`Info: Connecting to Reserve token for approval of spend:`, RESERVE_TOKEN_ADDRESS);
+    // const reserveContract = new rainSDK.ERC20(RESERVE_TOKEN_ADDRESS, signer)
+    // const approveTransaction = await reserveContract.approve(saleContract.address, DESIRED_UNITS_OF_REDEEMABLE);
+    // const approveReceipt = await approveTransaction.wait();
+    // console.log(`Info: ReserveContract:`, reserveContract);
+    // console.log(`Info: Approve Receipt:`, approveReceipt);
+
+
+    const depositTransaction = await redeemableERC20ClaimEscrow.deposit( // todo change to pending deposit
       ethers.utils.parseUnits(EXAMPLE_ERC20_AMOUNT_TO_DEPOSIT.toString(), EXAMPLE_ERC20_DECIMALS)
     );
     const depositReceipt = await depositTransaction.wait();
     console.log('Info: Token Deposit Receipt:', depositReceipt);
+
+    // todo and what is the sweep
+    // pending deposit is for when the sale has not started or is ongoing/active (can only do pending deposit, not deposit)
+
+
+
+    // todo change raise complete parameters
+
 
     console.log('------------------------------'); // separator
 
@@ -79,6 +107,12 @@ export async function escrowExample() {
     const endStatusTransaction = await saleContract.end();
     const endStatusReceipt = await endStatusTransaction.wait();
     console.log('Info: Sale Ended Receipt:', endStatusReceipt);
+
+    // todo call sweep function to move tokens from pending to deposit
+
+    //todo change distributionEndForwardingAddress to an address so the claimers can take only 1 from escrow when making the claim //distributionEndForwardingAddress: "0x0000000000000000000000000000000000000000" // the rTKNs that are not sold get forwarded here (0x00.. will burn them)
+
+    // todo add sdk version to videos
 
     console.log('------------------------------'); // separator
 
