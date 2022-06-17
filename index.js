@@ -54,11 +54,15 @@ export async function escrowExample() {
 
     console.log('------------------------------'); // separator
 
+    console.log('### Section 1: Mint erc20 Token');
     console.log("Info: Minting new ERC20 with the following state:", emissionsERC20Config);
     const erc20 = await rainSDK.EmissionsERC20.deploy(signer, emissionsERC20Config);
     console.log('Result: erc20:', erc20);
     const TOKEN_ADDRESS = erc20.address;
 
+    console.log('------------------------------'); // separator
+
+    console.log('### Section 2: Add Token to Escrow and Link to Sale');
     console.log("Info: Adding token to escrow and linking to your Sale:", TOKEN_ADDRESS);
     const redeemableERC20ClaimEscrow = await rainSDK.RedeemableERC20ClaimEscrow.get(SALE_ADDRESS, TOKEN_ADDRESS, signer);
     console.log('Info: redeemableERC20ClaimEscrow:', redeemableERC20ClaimEscrow);
@@ -70,6 +74,7 @@ export async function escrowExample() {
 
     console.log('------------------------------'); // separator
 
+    console.log('### Section 3: Close Sale');
     console.log('Info: Ending The Sale.');
     const saleContract = new rainSDK.Sale(SALE_ADDRESS, signer);
     const endStatusTransaction = await saleContract.end();
@@ -78,13 +83,12 @@ export async function escrowExample() {
 
     console.log('------------------------------'); // separator
 
+    console.log('### Section 4: Withdrawing Token');
     console.log(`Info: you should now be able to claim your token ${TOKEN_ADDRESS}:`);
-
     const withdrawTransaction = await redeemableERC20ClaimEscrow.withdraw(
       ethers.utils.parseUnits(EXAMPLE_ERC20_AMOUNT_TO_DEPOSIT.toString(), EXAMPLE_ERC20_DECIMALS)
     );
     const withdrawReceipt = await withdrawTransaction.wait();
-
     console.log(`Info: receipt for withdrawal (please check your wallet to make sure you have the token, you may need to add the address for the token ${TOKEN_ADDRESS}):`, withdrawReceipt);
 
     console.log('------------------------------'); // separator
