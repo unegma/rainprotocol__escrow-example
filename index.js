@@ -62,7 +62,7 @@ export async function escrowExample() {
     console.log('------------------------------'); // separator
 
     console.log('### Section 2: Add Token to Escrow and Link to Sale');
-    console.log("Info: Adding token to escrow and linking to your Sale:", TOKEN_ADDRESS);
+    console.log("Info: Adding token to escrow and linking to your Sale (be aware that anyone can do this for your Sale, when a sale is deployed, it is out for all to see):", TOKEN_ADDRESS);
     const redeemableERC20ClaimEscrow = await rainSDK.RedeemableERC20ClaimEscrow.get(SALE_ADDRESS, TOKEN_ADDRESS, signer);
     console.log('Info: redeemableERC20ClaimEscrow:', redeemableERC20ClaimEscrow);
     const depositTransaction = await redeemableERC20ClaimEscrow.deposit(
