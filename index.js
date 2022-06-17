@@ -39,15 +39,18 @@ export async function escrowExample() {
         name: 'Example Token',
         symbol: 'eTKN',
         distributor: '0x0000000000000000000000000000000000000000',
-        initialSupply: ethers.utils.parseUnits(EXAMPLE_ERC20_INITIAL_SUPPLY.toString(), EXAMPLE_ERC20_DECIMALS),
+        initialSupply: ethers.utils.parseUnits(EXAMPLE_ERC20_INITIAL_SUPPLY.toString(), EXAMPLE_ERC20_DECIMALS), // TODO CHECK UNDERSTANDING HOW TO LIMIT CORRECTLY, AND TO WHERE THIS GOES ON DEPLOYING THE CONTRACT (distributor?)
       },
-      // todo need code for immediate mint
       vmStateConfig: {
-        sources: [],
-        constants: [],
-        stackLength: [],
-        argumentsLength: []
-      }
+        constants: [1], // mint 1 at a time (infinitely), if set to 10, will mint 10 at a time, no more no less (infinitely)
+        sources: [
+          ethers.utils.concat([
+            rainSDK.utils.op(rainSDK.Sale.Opcodes.VAL, 0),
+          ]),
+        ],
+        stackLength: 1,
+        argumentsLength: 0,
+      },
     };
 
     console.log('### Section 1: Mint erc20 Token');
