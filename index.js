@@ -26,10 +26,13 @@ export async function escrowExample() {
     // 4. see the erc20 token get added to their wallet from the escrow
 
     // constants
+    // TODO PUT YOUR SALE ADDRESS HERE
+    const SALE_ADDRESS = 'myAddressFromOtherTutorial';
+    // TODO PUT YOUR SALE ADDRESS HERE
+
     const EXAMPLE_ERC20_DECIMALS = 18; // See here for more info: https://docs.openzeppelin.com/contracts/3.x/erc20#a-note-on-decimals
     const EXAMPLE_ERC20_INITIAL_SUPPLY = 100;
     const EXAMPLE_ERC20_AMOUNT_TO_DEPOSIT = 10;
-    const SALE_ADDRESS = 'myAddressFromOtherTutorial';
 
     const emissionsERC20Config = {
       allowDelegatedClaims: true, // todo what is this?
