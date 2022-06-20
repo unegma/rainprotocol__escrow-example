@@ -24,25 +24,25 @@ export async function escrowExample() {
 
     console.log('------------------------------'); // separator
 
-    console.warn('Info: BEFORE DOING THIS TUTORIAL, MAKE SURE YOU HAVE CREATED (AND NOT CLOSED) A SALE FROM THE PREVIOUS TUTORIAL AND ADDED THE ADDRESS TO: \n`const SALE_ADDRESS = \'myAddressFromOtherTutorial\';`');
+    console.warn('Info: BEFORE DOING THIS TUTORIAL, MAKE SURE YOU HAVE CREATED (AND CLOSED) A SALE FROM THE SALE TUTORIAL AND ADDED THE ADDRESS TO: \n`const SALE_ADDRESS`');
 
     console.log('------------------------------'); // separator
 
-    // constants
-
-    // TODO PUT YOUR SALE ADDRESS HERE
-    // const SALE_ADDRESS = '0xcaed7C5344b0755f282c71259E4556bA23dD3450';
+    // constants (can put these into .env)
+    // v-- TODO PUT YOUR SALE ADDRESS HERE --v
     const SALE_ADDRESS = '0x1F73226Ea909A3e681ba39A7418C9EfAfEb96A2d'; // a closed sale from which you own an rTKN
-    // TODO PUT YOUR SALE ADDRESS HERE
-
+    // ^-- TODO PUT YOUR SALE ADDRESS HERE --^
     const EXAMPLE_ERC20_DECIMALS = 18; // See here for more info: https://docs.openzeppelin.com/contracts/3.x/erc20#a-note-on-decimals
     const EXAMPLE_ERC20_INITIAL_SUPPLY = 10;
     const EXAMPLE_ERC20_AMOUNT_TO_DEPOSIT = 10;
 
-    // can add to escrow when sale is complete,
+    // Use case for ensuring users can only claim 1 token
     // a. check the supply of rTKN when a sale is complete
     // b. deposit an amount of erc20 tokens based on that number into an escrow
     // c. users can only claim 1 token each
+
+    // Use case for ensuring users can only claim 1 token (before Sale is complete
+    // assign the distributionEndForwardingAddress to the admin so no tokens are burned, this way, the total supply of rTKN is always the same and 1 escrow token is always 1 rTKN
 
     const emissionsERC20Config = {
       allowDelegatedClaims: false, // can mint on behalf of someone else
