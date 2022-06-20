@@ -101,10 +101,11 @@ export async function escrowExample() {
     // todo add sdk version to videos
 
     console.log('### Section 3: Withdrawing Token');
-    console.log(`Info: you should now be able to claim your token ${TOKEN_ADDRESS}:`);
+    console.log(`Info: withdrawing ${TOKEN_ADDRESS} from escrow:`);
     const withdrawTransaction = await redeemableERC20ClaimEscrow.withdraw(
       ethers.utils.parseUnits(EXAMPLE_ERC20_AMOUNT_TO_DEPOSIT.toString(), EXAMPLE_ERC20_DECIMALS)
     );
+    console.log(withdrawTransaction);
     const withdrawReceipt = await withdrawTransaction.wait();
     console.log(`Info: receipt for withdrawal (please check your wallet to make sure you have the token, you may need to add the address for the token ${TOKEN_ADDRESS}):`, withdrawReceipt);
 
