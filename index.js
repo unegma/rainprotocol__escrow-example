@@ -82,7 +82,10 @@ export async function escrowExample() {
     console.log('Info: redeemableERC20ClaimEscrow:', redeemableERC20ClaimEscrow);
 
     console.log(`Info: Connecting to ERC20 token for approval of spend:`, TOKEN_ADDRESS);
-    const approveTransaction = await erc20.approve(redeemableERC20ClaimEscrow.address, EXAMPLE_ERC20_AMOUNT_TO_DEPOSIT);
+    const approveTransaction = await erc20.approve(
+      redeemableERC20ClaimEscrow.address,
+      ethers.utils.parseUnits(EXAMPLE_ERC20_AMOUNT_TO_DEPOSIT.toString(), EXAMPLE_ERC20_DECIMALS)
+    );
     const approveReceipt = await approveTransaction.wait();
     console.log(`Info: Approve Receipt:`, approveReceipt);
     const depositTransaction = await redeemableERC20ClaimEscrow.deposit( // change to pending deposit if sale is running, need to 'sweep' afterwards to move tokens from pending to deposit
