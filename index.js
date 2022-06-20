@@ -97,7 +97,6 @@ export async function escrowExample() {
     console.log('------------------------------'); // separator
 
     // todo change raise complete parameters
-    // todo explain why close sale isn't needed
     // todo change distributionEndForwardingAddress to an address so the claimers can take only 1 from escrow when making the claim //distributionEndForwardingAddress: "0x0000000000000000000000000000000000000000" // the rTKNs that are not sold get forwarded here (0x00.. will burn them)
     // todo add sdk version to videos
 
