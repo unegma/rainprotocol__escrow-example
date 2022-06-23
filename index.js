@@ -14,7 +14,7 @@ export async function escrowExample() {
   // todo you will need to have completed the sale tutorial, purchased an item, and then closed the sale in order to use this example
 
   try {
-    const { signer, address } = await connect(); // get the signer and account address using a very basic connection implementation
+    const { address, signer } = await connect(); // get the signer and account address using a very basic connection implementation
 
     console.log('------------------------------'); // separator
 
@@ -30,7 +30,8 @@ export async function escrowExample() {
 
     // constants (can put these into .env)
     // v-- TODO PUT YOUR SALE ADDRESS HERE --v
-    const SALE_ADDRESS = '0x1F73226Ea909A3e681ba39A7418C9EfAfEb96A2d'; // a closed sale from which you own an rTKN
+    // from @rouzwel: I changed the Sale address to a one that my address was a rTKN buyer, so this needs to be corrected in your example
+    const SALE_ADDRESS = '0x89E79aF2B6483f3e13397926a582c42B8abEcbE0'; // a closed sale from which you own an rTKN
     // ^-- TODO PUT YOUR SALE ADDRESS HERE --^
     const EXAMPLE_ERC20_DECIMALS = 18; // See here for more info: https://docs.openzeppelin.com/contracts/3.x/erc20#a-note-on-decimals
     const EXAMPLE_ERC20_INITIAL_SUPPLY = 10;
@@ -88,10 +89,17 @@ export async function escrowExample() {
     );
     const approveReceipt = await approveTransaction.wait();
     console.log(`Info: Approve Receipt:`, approveReceipt);
+
     const depositTransaction = await redeemableERC20ClaimEscrow.deposit( // change to pending deposit if sale is running, need to 'sweep' afterwards to move tokens from pending to deposit
       ethers.utils.parseUnits(EXAMPLE_ERC20_AMOUNT_TO_DEPOSIT.toString(), EXAMPLE_ERC20_DECIMALS)
     );
     const depositReceipt = await depositTransaction.wait();
+
+    // capturing the current supply of rTKN from the Sale at the time of deposit (just after depositing), to be used when calling the withdraw function 
+    // (by default this data needs to come from sg query but it is not in the scope of this example)
+    const sale = await new rainSDK.Sale(SALE_ADDRESS, signer); // instantiating the Sale contract
+    const rTKN = await sale.getRedeemable();  // instantiating the Sale's rTKN contract
+    const rTKN_CURRENT_SUPPLY_AT_TIME_OF_DEPOSIT = await rTKN.totalSupply(); // getting the current supply of rTKN
     console.log('Info: Token Deposit Receipt:', depositReceipt);
 
     console.log('------------------------------'); // separator
@@ -99,11 +107,14 @@ export async function escrowExample() {
     // todo change raise complete parameters
     // todo change distributionEndForwardingAddress to an address so the claimers can take only 1 from escrow when making the claim //distributionEndForwardingAddress: "0x0000000000000000000000000000000000000000" // the rTKNs that are not sold get forwarded here (0x00.. will burn them)
     // todo add sdk version to videos
-
+    
+    // the withdrawer should be the rTKN buyer (holder) of the sale 
+    // (from @rouzwelt: my address was a buyer (holder) of the my sale contract so I can perform the withdraw with my wallet as signer, so for this example I think you need to link it with the Sale example,
+    // so the signer is the buyer of rTKN and then can perform this example and withdraw from escrow, because if the signer is not a buyer of the sale, then he/she cannot withdraw)
     console.log('### Section 3: Withdrawing Token');
     console.log(`Info: withdrawing ${TOKEN_ADDRESS} from escrow:`);
     const withdrawTransaction = await redeemableERC20ClaimEscrow.withdraw(
-      ethers.utils.parseUnits(EXAMPLE_ERC20_AMOUNT_TO_DEPOSIT.toString(), EXAMPLE_ERC20_DECIMALS)
+      rTKN_CURRENT_SUPPLY_AT_TIME_OF_DEPOSIT  // each deposit captures the rTKN supply when being submitted on-chain (because the supply of rTKN can change at anytime by holders burning), so when calling withdraw, we need to pass rTKN supply at the time of that specific deposit to be able to perform the withdraw
     );
     console.log(withdrawTransaction);
     const withdrawReceipt = await withdrawTransaction.wait();
