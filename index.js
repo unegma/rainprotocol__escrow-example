@@ -69,7 +69,7 @@ export async function escrowExample() {
       },
     };
 
-    console.log('### Section 1: Mint erc20 Token');
+    console.log('### Section 1: Mint erc20 Token (Admin function)');
     console.log("Info: Minting new ERC20 with the following state:", emissionsERC20Config);
     const emissionsErc20 = await rainSDK.EmissionsERC20.deploy(signer, emissionsERC20Config);
 
@@ -80,7 +80,7 @@ export async function escrowExample() {
 
     console.log('------------------------------'); // separator
 
-    console.log('### Section 2: Add Token to Escrow and Link to Sale');
+    console.log('### Section 2: Add Token to Escrow and Link to Sale (Admin function)');
     console.log("Info: Adding token to escrow and linking to Sale (be aware that anyone can do this for your Sale):", TOKEN_ADDRESS);
     const redeemableERC20ClaimEscrow = await rainSDK.RedeemableERC20ClaimEscrow.get(SALE_ADDRESS, TOKEN_ADDRESS, signer);
     console.log('Info: redeemableERC20ClaimEscrow:', redeemableERC20ClaimEscrow);
@@ -103,6 +103,27 @@ export async function escrowExample() {
     const sale = await new rainSDK.Sale(SALE_ADDRESS, signer); // instantiating the Sale contract
     const rTKN = await sale.getRedeemable();  // instantiating the Sale's rTKN contract
     const rTKN_CURRENT_SUPPLY_AT_TIME_OF_DEPOSIT = await rTKN.totalSupply(); // getting the current supply of rTKN // todo tutorial b. will focus on how to change this to use the subgraph
+
+    // {
+    //   redeemableEscrowDeposits(where:{iSaleAddress:"0xbeBFc04050e4afddE68EC2EA5f105690765c1a1E", escrowAddress: ESCROW, depositorAddress: DEPOSITOR}) {
+    //   id
+    //   escrowAddress
+    //   redeemable {
+    //     id
+    //   }
+    //   depositor {
+    //     id
+    //   }
+    //   token {
+    //     id
+    //   }
+    //   tokenAddress
+    //   tokenAmount
+    //   redeemableSupply
+    // }
+    // }
+
+
     console.log('Info: Token Deposit Receipt:', depositReceipt);
 
     console.log('------------------------------'); // separator
@@ -114,7 +135,7 @@ export async function escrowExample() {
     // the withdrawer should be the rTKN buyer (holder) of the sale 
     // (from @rouzwelt: my address was a buyer (holder) of the my sale contract so I can perform the withdraw with my wallet as signer, so for this example I think you need to link it with the Sale example,
     // so the signer is the buyer of rTKN and then can perform this example and withdraw from escrow, because if the signer is not a buyer of the sale, then he/she cannot withdraw)
-    console.log('### Section 3: Withdrawing Token');
+    console.log('### Section 3: Withdrawing Token (User function, i.e. holder of rTKN from Sale)');
     console.log(`Info: withdrawing ${TOKEN_ADDRESS} from escrow:`);
     const withdrawTransaction = await redeemableERC20ClaimEscrow.withdraw(
       rTKN_CURRENT_SUPPLY_AT_TIME_OF_DEPOSIT  // each deposit captures the rTKN supply when being submitted on-chain (because the supply of rTKN can change at anytime by holders burning), so when calling withdraw, we need to pass rTKN supply at the time of that specific deposit to be able to perform the withdraw
