@@ -9,6 +9,8 @@ import { connect } from "./connect.js"; // a very basic web3 connection implemen
  */
 export async function escrowExample() {
 
+  // todo what are the call exception errors? just a mumbai thing? https://docs.ethers.io/v5/troubleshooting/errors/#help-CALL_EXCEPTION
+
   // todo maybe warn users they will need to have X matic in their wallet in order to complete ALL the transactions
 
   // todo you will need to have completed the sale tutorial, purchased an item, and then closed the sale in order to use this example
@@ -30,12 +32,11 @@ export async function escrowExample() {
 
     // constants (can put these into .env)
     // v-- TODO PUT YOUR SALE ADDRESS HERE --v
-    // from @rouzwel: I changed the Sale address to a one that my address was a rTKN buyer, so this needs to be corrected in your example
-    const SALE_ADDRESS = '0x89E79aF2B6483f3e13397926a582c42B8abEcbE0'; // a closed sale from which you own an rTKN
+    const SALE_ADDRESS = '0x98035F4Bc36DCc7b8aC811c9a6d9CE08A87305d0'; // a closed sale from which you own an rTKN
     // ^-- TODO PUT YOUR SALE ADDRESS HERE --^
     const EXAMPLE_ERC20_DECIMALS = 18; // See here for more info: https://docs.openzeppelin.com/contracts/3.x/erc20#a-note-on-decimals
     const EXAMPLE_ERC20_INITIAL_SUPPLY = 10;
-    const EXAMPLE_ERC20_AMOUNT_TO_DEPOSIT = 10;
+    const EXAMPLE_ERC20_AMOUNT_TO_DEPOSIT = 1; // todo is 10 (which the user has from initial supply), causing the insufficient_allowance error?
 
     // Use case for ensuring users can only claim 1 token
     // a. check the supply of rTKN when a sale is complete
@@ -68,12 +69,12 @@ export async function escrowExample() {
 
     console.log('### Section 1: Mint erc20 Token');
     console.log("Info: Minting new ERC20 with the following state:", emissionsERC20Config);
-    const erc20 = await rainSDK.EmissionsERC20.deploy(signer, emissionsERC20Config);
+    const emissionsErc20 = await rainSDK.EmissionsERC20.deploy(signer, emissionsERC20Config);
 
     // todo claim function will mint another token (in addition to initial supply)
 
-    console.log('Result: erc20:', erc20);
-    const TOKEN_ADDRESS = erc20.address;
+    console.log('Result: emissionsErc20:', emissionsErc20);
+    const TOKEN_ADDRESS = emissionsErc20.address;
 
     console.log('------------------------------'); // separator
 
@@ -82,8 +83,8 @@ export async function escrowExample() {
     const redeemableERC20ClaimEscrow = await rainSDK.RedeemableERC20ClaimEscrow.get(SALE_ADDRESS, TOKEN_ADDRESS, signer);
     console.log('Info: redeemableERC20ClaimEscrow:', redeemableERC20ClaimEscrow);
 
-    console.log(`Info: Connecting to ERC20 token for approval of spend:`, TOKEN_ADDRESS);
-    const approveTransaction = await erc20.approve(
+    console.log(`Info: Connecting to ERC20 token (${TOKEN_ADDRESS}) for approval of spend of ${EXAMPLE_ERC20_AMOUNT_TO_DEPOSIT}:`, );
+    const approveTransaction = await emissionsErc20.approve(
       redeemableERC20ClaimEscrow.address,
       ethers.utils.parseUnits(EXAMPLE_ERC20_AMOUNT_TO_DEPOSIT.toString(), EXAMPLE_ERC20_DECIMALS)
     );
@@ -99,7 +100,7 @@ export async function escrowExample() {
     // (by default this data needs to come from sg query but it is not in the scope of this example)
     const sale = await new rainSDK.Sale(SALE_ADDRESS, signer); // instantiating the Sale contract
     const rTKN = await sale.getRedeemable();  // instantiating the Sale's rTKN contract
-    const rTKN_CURRENT_SUPPLY_AT_TIME_OF_DEPOSIT = await rTKN.totalSupply(); // getting the current supply of rTKN
+    const rTKN_CURRENT_SUPPLY_AT_TIME_OF_DEPOSIT = await rTKN.totalSupply(); // getting the current supply of rTKN // todo tutorial b. will focus on how to change this to use the subgraph
     console.log('Info: Token Deposit Receipt:', depositReceipt);
 
     console.log('------------------------------'); // separator
