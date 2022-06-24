@@ -32,10 +32,12 @@ export async function escrowExample() {
 
     // constants (can put these into .env)
     // v-- TODO PUT YOUR SALE ADDRESS HERE --v
-    const SALE_ADDRESS = '0x98035F4Bc36DCc7b8aC811c9a6d9CE08A87305d0'; // a closed sale from which you own an rTKN
+    const SALE_ADDRESS = "0xbeBFc04050e4afddE68EC2EA5f105690765c1a1E"; // a closed sale from which you own an rTKN
     // ^-- TODO PUT YOUR SALE ADDRESS HERE --^
     const EXAMPLE_ERC20_DECIMALS = 18; // See here for more info: https://docs.openzeppelin.com/contracts/3.x/erc20#a-note-on-decimals
-    const EXAMPLE_ERC20_INITIAL_SUPPLY = 10;
+
+    // using 1 and 1 because there will be only 1 token left in the Sale after completion (in previous tutorial), as the other 99 were burnt
+    const EXAMPLE_ERC20_INITIAL_SUPPLY = 1;
     const EXAMPLE_ERC20_AMOUNT_TO_DEPOSIT = 1; // todo is 10 (which the user has from initial supply), causing the insufficient_allowance error?
 
     // Use case for ensuring users can only claim 1 token
@@ -79,7 +81,7 @@ export async function escrowExample() {
     console.log('------------------------------'); // separator
 
     console.log('### Section 2: Add Token to Escrow and Link to Sale');
-    console.log("Info: Adding token to escrow and linking to your Sale (be aware that anyone can do this for your Sale):", TOKEN_ADDRESS);
+    console.log("Info: Adding token to escrow and linking to Sale (be aware that anyone can do this for your Sale):", TOKEN_ADDRESS);
     const redeemableERC20ClaimEscrow = await rainSDK.RedeemableERC20ClaimEscrow.get(SALE_ADDRESS, TOKEN_ADDRESS, signer);
     console.log('Info: redeemableERC20ClaimEscrow:', redeemableERC20ClaimEscrow);
 
