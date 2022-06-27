@@ -1,8 +1,14 @@
-import * as rainSDK from "rain-sdk"; // rain SDK imported using importmap in index.html (or in package.json)
-import { ethers } from "ethers"; // ethers library imported using importmap in index.html (or in package.json)
-import { connect } from "./connect.js"; // a very basic web3 connection implementation
+import * as rainSDK from 'rain-sdk'; // rain SDK imported using importmap in index.html (or in package.json)
+import { ethers } from 'ethers'; // ethers library imported using importmap in index.html (or in package.json)
+import { connect } from './connect.js'; // a very basic web3 connection implementation
+import { logToWindow } from '@unegma/utils';
+logToWindow('console'); // override console.log to output to browser with very simple styling (be aware, this prevents pushing multiple messages in one .log())
 
-const SUBGRAPH_ENDPOINT = rainSDK.AddressBook.getSubgraphEndpoint(80001);
+const CHAIN_DATA = {
+  name: 'Mumbai',
+  chainId: 80001 // Mumbai testnet chain id
+}
+const SUBGRAPH_ENDPOINT = rainSDK.AddressBook.getSubgraphEndpoint(CHAIN_DATA.chainId);
 
 /**
  * Escrow Example
@@ -18,17 +24,18 @@ export async function escrowExample() {
   // todo you will need to have completed the sale tutorial, purchased an item, and then closed the sale in order to use this example
 
   try {
-    const { address, signer } = await connect(); // get the signer and account address using a very basic connection implementation
+    console.log('Escrow Example (make sure you have a browser wallet installed)', 'black', 'bold');
+    const { address, signer } = await connect(CHAIN_DATA); // get the signer and account address using a very basic connection implementation
 
     console.log('------------------------------'); // separator
 
-    console.warn("Info: It is important to let your users know how many transactions to expect and what they are. " +
-      "This example consists of X Transactions:\n\n"
+    console.log('Info: It is important to let your users know how many transactions to expect and what they are. ' +
+      'This example consists of X Transactions:', 'orange'
     );
 
     console.log('------------------------------'); // separator
 
-    console.warn('Info: BEFORE DOING THIS TUTORIAL, MAKE SURE YOU HAVE CREATED (AND CLOSED) A SALE FROM THE SALE TUTORIAL AND ADDED THE ADDRESS TO: \n`const SALE_ADDRESS`');
+    console.log('Info: BEFORE DOING THIS TUTORIAL, MAKE SURE YOU HAVE CREATED (AND CLOSED) A SALE FROM THE SALE TUTORIAL AND ADDED THE ADDRESS TO: `const SALE_ADDRESS`', 'red', 'bold');
 
     console.log('------------------------------'); // separator
 
@@ -71,41 +78,45 @@ export async function escrowExample() {
       },
     };
 
-    console.log('### Section 1 (Admin function): Mint erc20 Token for adding to an Escrow connected to the Sale');
-    console.log("Info: Minting new ERC20 with the following state:", emissionsERC20Config);
+    console.log('### Section 1 (Admin function): Mint erc20 Token for adding to an Escrow connected to the Sale', 'black', 'bold');
+    console.log('Info: Minting new ERC20 with the following state:')
+    console.log(emissionsERC20Config);
     const emissionsErc20 = await rainSDK.EmissionsERC20.deploy(signer, emissionsERC20Config);
     // todo claim function will mint another token (in addition to initial supply)??
     const EMISSIONS_ERC20_TOKEN_ADDRESS = emissionsErc20.address;
-    console.log(`Result: emissionsErc20, with address ${EMISSIONS_ERC20_TOKEN_ADDRESS}:`, emissionsErc20); // todo check what exists in addition to what is on an erc20, are erc20s through the evm 'factory'?
+    console.log(`Result: emissionsErc20, with address ${EMISSIONS_ERC20_TOKEN_ADDRESS}:`)
+    console.log(emissionsErc20); // todo check what exists in addition to what is on an erc20, are erc20s through the evm 'factory'?
 
     console.log('------------------------------'); // separator
 
-    console.log('### Section 2 (Admin function): Add Token to Escrow and Link to Sale');
+    console.log('### Section 2 (Admin function): Add Token to Escrow and Link to Sale', 'black', 'bold');
     console.log(`Info: Adding Token (${EMISSIONS_ERC20_TOKEN_ADDRESS}) to Escrow and linking to Sale (${SALE_ADDRESS}) (be aware that anyone can do this for any Sale):`);
     const redeemableERC20ClaimEscrow = await rainSDK.RedeemableERC20ClaimEscrow.get(SALE_ADDRESS, EMISSIONS_ERC20_TOKEN_ADDRESS, signer);
     const ESCROW_ADDRESS = redeemableERC20ClaimEscrow.address;
-    console.log(`Info: redeemableERC20ClaimEscrow, with address ${ESCROW_ADDRESS}:`, redeemableERC20ClaimEscrow);
+    console.log(`Info: redeemableERC20ClaimEscrow, with address ${ESCROW_ADDRESS}:`)
+    console.log(redeemableERC20ClaimEscrow);
 
     // todo add 1 TOKEN_SYMBOL
-    console.log(`Info: Connecting to ${emissionsERC20Config.erc20Config.name} ERC20 token (${EMISSIONS_ERC20_TOKEN_ADDRESS}) for approval of spend of ${EXAMPLE_ERC20_AMOUNT_TO_DEPOSIT} ${emissionsERC20Config.erc20Config.symbol}:`, );
+    console.log(`Info: Connecting to ${emissionsERC20Config.erc20Config.name} ERC20 token (${EMISSIONS_ERC20_TOKEN_ADDRESS}) for approval of spend of ${EXAMPLE_ERC20_AMOUNT_TO_DEPOSIT} ${emissionsERC20Config.erc20Config.symbol}`);
     const approveTransaction = await emissionsErc20.approve(
       redeemableERC20ClaimEscrow.address,
       ethers.utils.parseUnits(EXAMPLE_ERC20_AMOUNT_TO_DEPOSIT.toString(), EXAMPLE_ERC20_DECIMALS)
     );
     const approveReceipt = await approveTransaction.wait();
-    console.log(`Info: Approve Receipt:`, approveReceipt);
+    console.log('Info: Approve Receipt:');
+    console.log(approveReceipt);
 
     const depositTransaction = await redeemableERC20ClaimEscrow.deposit( // change to pending deposit if sale is running, need to 'sweep' afterwards to move tokens from pending to deposit
       ethers.utils.parseUnits(EXAMPLE_ERC20_AMOUNT_TO_DEPOSIT.toString(), EXAMPLE_ERC20_DECIMALS)
     );
     const depositReceipt = await depositTransaction.wait();
 
-    console.log('Info: Token Deposit Receipt:', depositReceipt);
+    console.log('Info: Token Deposit Receipt:');
+    console.log(depositReceipt);
 
     console.log('------------------------------'); // separator
 
-
-    console.log(`Info: Waiting 1 minute to let subgraph index data...`);
+    console.log('Info: Waiting 1 minute to let subgraph index data...');
     // wait for 1 minute so that subgraph has time to index
     await new Promise(resolve => setTimeout(resolve, 60000));
 
@@ -118,7 +129,7 @@ export async function escrowExample() {
     // the withdrawer should be the rTKN buyer (holder) of the sale 
     // (from @rouzwelt: my address was a buyer (holder) of the my sale contract so I can perform the withdraw with my wallet as signer, so for this example I think you need to link it with the Sale example,
     // so the signer is the buyer of rTKN and then can perform this example and withdraw from escrow, because if the signer is not a buyer of the sale, then he/she cannot withdraw)
-    console.log(`### Section 3 (User function): Withdrawing ${emissionsERC20Config.erc20Config.symbol} Token for User, i.e. holder of redeemable Tokens (rTKN) from Sale)`);
+    console.log(`### Section 3 (User function): Withdrawing ${emissionsERC20Config.erc20Config.symbol} Token for User, i.e. holder of redeemable Tokens (rTKN) from Sale)`, 'black', 'bold');
 
     // capturing the current supply of rTKN from the Sale at the time of deposit (just after depositing), to be used when calling the withdraw function
     // (by default this data needs to come from sg query but it is not in the scope of this example)
@@ -129,7 +140,6 @@ export async function escrowExample() {
     // todo check if token address can be one of the query inputs
     // todo DOES IT NEED TIME TO ADD THE TOKEN EVENT TO THE SUBGRAPH?? (NOTHING COMING UP WHEN PASSING IN EMISSIONS_ERC20_TOKEN_ADDRESS)
     // todo--question what is the difference between tokenAmount and redeemableSupply?
-
 
     // depositorAddress are the same in this example as we are using the same wallet for everything
     let subgraphData = await fetch(SUBGRAPH_ENDPOINT, {
@@ -165,7 +175,8 @@ export async function escrowExample() {
 
     // todo catch for undefined
 
-    console.log(`Info: data from subgraph with endpoint ${SUBGRAPH_ENDPOINT}:`, subgraphData);
+    console.log(`Info: data from subgraph with endpoint ${SUBGRAPH_ENDPOINT}:`);
+    console.log(subgraphData);
 
     // todo add data about what the token is and how much
     console.log(`Info: withdrawing ${emissionsERC20Config.erc20Config.symbol} from Escrow for User, (amount received will be based on User's holdings of ${subgraphData.token.symbol} at the time the ${emissionsERC20Config.erc20Config.symbol} deposit happened):`);
@@ -189,13 +200,16 @@ export async function escrowExample() {
 
     console.log(withdrawTransaction);
     const withdrawReceipt = await withdrawTransaction.wait();
-    console.log(`Info: receipt for withdrawal (please check your wallet to make sure you have the token, you may need to add the address for the token ${EMISSIONS_ERC20_TOKEN_ADDRESS}):`, withdrawReceipt);
+    console.log(`Info: receipt for withdrawal (please check your wallet to make sure you have the token, you may need to add the address for the token ${EMISSIONS_ERC20_TOKEN_ADDRESS}):`)
+    console.log(withdrawReceipt);
 
     console.log('------------------------------'); // separator
 
-    console.log("Info: Done");
+    console.log('Info: Done');
   } catch (err) {
-    console.log(err);
+    console.log('------------------------------'); // separator
+    console.log(`Error:`, 'red', 'bold');
+    console.log(err, 'red');
   }
 }
 
