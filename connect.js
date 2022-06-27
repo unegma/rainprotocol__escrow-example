@@ -16,8 +16,7 @@ export const connect = async (chainData) => {
     const signer = provider.getSigner();
     const address = await signer.getAddress();
 
-    console.log('Info: Connected to account with address');
-    console.log(address, 'green');
+    console.log(`Result: Connected to your account with address: ${address}`, 'green');
     console.log('------------------------------'); // separator
     return { signer, address };
   } catch (err) {
