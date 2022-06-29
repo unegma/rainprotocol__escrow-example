@@ -24,17 +24,17 @@ export async function escrowExample() {
   // todo you will need to have completed the sale tutorial, purchased an item, and then closed the sale in order to use this example
 
   try {
-    console.log('# Escrow Example', 'black', 'bold');
-    console.log('Info: (check your console for more data and make sure you have a browser wallet installed and connected to Polygon Mumbai testnet)', 'orange');
+    console.log('> # Escrow Example', 'black', 'bold');
+    console.log('> Info: (check your console for more data and make sure you have a browser wallet installed and connected to Polygon Mumbai testnet)', 'orange');
     const { address, signer } = await connect(CHAIN_DATA); // get the signer and account address using a very basic connection implementation
 
-    console.log('## Transactions', 'orange', 'bold');
-    console.log('Info: It is important to let your users know how many transactions to expect and what they are.', 'orange');
-    console.log('This example consists of x Transactions:', 'orange');
+    console.log('> ## Transactions', 'orange', 'bold');
+    console.log('> Info: It is important to let your users know how many transactions to expect and what they are.', 'orange');
+    console.log('> This example consists of x Transactions:', 'orange');
 
     console.log('------------------------------'); // separator
 
-    console.log('Info: BEFORE DOING THIS TUTORIAL, MAKE SURE YOU HAVE CREATED (AND CLOSED) A SALE FROM THE SALE TUTORIAL AND ADDED THE ADDRESS TO: `SALE_ADDRESS`', 'red', 'bold');
+    console.log('> Info: BEFORE DOING THIS TUTORIAL, MAKE SURE YOU HAVE CREATED (AND CLOSED) A SALE FROM THE SALE TUTORIAL AND ADDED THE ADDRESS TO: `SALE_ADDRESS`', 'red', 'bold');
 
     console.log('------------------------------'); // separator
 
@@ -78,45 +78,45 @@ export async function escrowExample() {
       },
     };
 
-    console.log('## Section 1 (Admin function): Mint erc20 Token for adding to an Escrow connected to the Sale', 'black', 'bold');
-    console.log('Info: Deploying new ERC20 with the following state:')
+    console.log('> ## Section 1 (Admin function): Mint erc20 Token for adding to an Escrow connected to the Sale', 'black', 'bold');
+    console.log('> Info: Deploying new ERC20 with the following state:')
     console.log(emissionsERC20Config, 'blue');
     const emissionsErc20 = await rainSDK.EmissionsERC20.deploy(signer, emissionsERC20Config);
     // todo claim function will mint another token (in addition to initial supply)??
     const emissionsErc20Address = emissionsErc20.address;
-    console.log(`Result: deployed emissionsErc20, with address ${emissionsErc20Address}, and sent you: ${EXAMPLE_ERC20_INITIAL_SUPPLY} Tokens`, 'green')
+    console.log(`> Result: deployed emissionsErc20, with address ${emissionsErc20Address}, and sent you: ${EXAMPLE_ERC20_INITIAL_SUPPLY} Tokens`, 'green')
     console.log(emissionsErc20); // todo check what exists in addition to what is on an erc20, are erc20s through the evm 'factory'?
-    console.log('Info: to see the tokens in your Wallet, add a new token with the address above.', 'red', 'bold');
+    console.log('> Info: to see the tokens in your Wallet, add a new token with the address above.', 'red', 'bold');
 
     console.log('------------------------------'); // separator
 
-    console.log('## Section 2 (Admin function): Add Token to Escrow and Link to Sale', 'black', 'bold');
-    console.log(`Info: Adding Token (${emissionsErc20Address}) to Escrow and linking to Sale (${SALE_ADDRESS}).`);
-    console.log('Info: be aware that, due to the open nature of blockchains, anyone can create an Escrow for any Sale.', 'orange');
+    console.log('> ## Section 2 (Admin function): Add Token to Escrow and Link to Sale', 'black', 'bold');
+    console.log(`> Info: Adding Token (${emissionsErc20Address}) to Escrow and linking to Sale (${SALE_ADDRESS}).`);
+    console.log('> Info: be aware that, due to the open nature of blockchains, anyone can create an Escrow for any Sale.', 'orange');
     const redeemableERC20ClaimEscrow = await rainSDK.RedeemableERC20ClaimEscrow.get(SALE_ADDRESS, emissionsErc20Address, signer);
     const escrowAddress = redeemableERC20ClaimEscrow.address;
-    console.log(`Result: initialised redeemableERC20ClaimEscrow, with address ${escrowAddress}`, 'green');
+    console.log(`> Result: initialised redeemableERC20ClaimEscrow, with address ${escrowAddress}`, 'green');
     console.log(redeemableERC20ClaimEscrow);
-    console.log(`Info: Connecting to ${emissionsERC20Config.erc20Config.name} ERC20 token (${emissionsErc20Address}) for approval of spend of ${EXAMPLE_ERC20_AMOUNT_TO_DEPOSIT} ${emissionsERC20Config.erc20Config.symbol}`);
+    console.log(`> Info: Connecting to ${emissionsERC20Config.erc20Config.name} ERC20 token (${emissionsErc20Address}) for approval of spend of ${EXAMPLE_ERC20_AMOUNT_TO_DEPOSIT} ${emissionsERC20Config.erc20Config.symbol}`);
     const approveTransaction = await emissionsErc20.approve(
       redeemableERC20ClaimEscrow.address,
       ethers.utils.parseUnits(EXAMPLE_ERC20_AMOUNT_TO_DEPOSIT.toString(), EXAMPLE_ERC20_DECIMALS)
     );
     const approveReceipt = await approveTransaction.wait();
     console.info(approveReceipt);
-    console.log(`Info: depositing token into Escrow:`);
+    console.log(`> Info: depositing token into Escrow:`);
     console.log(escrowAddress, 'blue');
     const depositTransaction = await redeemableERC20ClaimEscrow.deposit( // change to pending deposit if sale is running, need to 'sweep' afterwards to move tokens from pending to deposit
       ethers.utils.parseUnits(EXAMPLE_ERC20_AMOUNT_TO_DEPOSIT.toString(), EXAMPLE_ERC20_DECIMALS)
     );
     const depositReceipt = await depositTransaction.wait();
 
-    console.log('Result: Deposit complete.', 'green');
+    console.log('> Result: Deposit complete.', 'green');
     console.info(depositReceipt);
 
     console.log('------------------------------'); // separator
 
-    console.log('Info: Waiting 1 minute to let subgraph index data...', 'red');
+    console.log('> Info: Waiting 1 minute to let subgraph index data...', 'red');
     // wait for 1 minute so that subgraph has time to index
     await new Promise(resolve => setTimeout(resolve, 60000));
 
@@ -129,7 +129,7 @@ export async function escrowExample() {
     // the withdrawer should be the rTKN buyer (holder) of the sale 
     // (from @rouzwelt: my address was a buyer (holder) of the my sale contract so I can perform the withdraw with my wallet as signer, so for this example I think you need to link it with the Sale example,
     // so the signer is the buyer of rTKN and then can perform this example and withdraw from escrow, because if the signer is not a buyer of the sale, then he/she cannot withdraw)
-    console.log(`## Section 3 (User function): Withdrawing ${emissionsERC20Config.erc20Config.symbol} Token for User, i.e. holder of redeemable Tokens (rTKN) from Sale)`, 'black', 'bold');
+    console.log(`> ## Section 3 (User function): Withdrawing ${emissionsERC20Config.erc20Config.symbol} Token for User, i.e. holder of redeemable Tokens (rTKN) from Sale)`, 'black', 'bold');
 
     // capturing the current supply of rTKN from the Sale at the time of deposit (just after depositing), to be used when calling the withdraw function
     // (by default this data needs to come from sg query but it is not in the scope of this example)
@@ -140,7 +140,7 @@ export async function escrowExample() {
     // todo check if token address can be one of the query inputs
     // todo DOES IT NEED TIME TO ADD THE TOKEN EVENT TO THE SUBGRAPH?? (NOTHING COMING UP WHEN PASSING IN emissionsErc20Address)
     // todo--question what is the difference between tokenAmount and redeemableSupply?
-    console.log('Info: fetching deposit data from Subgraph with endpoint:');
+    console.log('> Info: fetching deposit data from Subgraph with endpoint:');
     console.log(SUBGRAPH_ENDPOINT, 'blue');
     // depositorAddress are the same in this example as we are using the same wallet for everything
     let subgraphData = await fetch(SUBGRAPH_ENDPOINT, {
@@ -174,11 +174,11 @@ export async function escrowExample() {
     subgraphData = subgraphData.data.redeemableEscrowDeposits[0]; // should only be one here anyway. // todo--question is there potential for 'too quick' to cause it not to exist yet in the subgraph?
     if (subgraphData === undefined) throw new Error('NO_SUBGRAPH_DATA');
 
-    console.log(`Result: data from subgraph with endpoint ${SUBGRAPH_ENDPOINT}:`);
+    console.log(`> Result: data from subgraph with endpoint ${SUBGRAPH_ENDPOINT}:`);
     console.log(subgraphData, 'blue');
 
     // todo add data about what the token is and how much
-    console.log(`Info: withdrawing ${emissionsERC20Config.erc20Config.symbol} from Escrow for User, (amount received will be based on User's holdings of ${subgraphData.token.symbol} at the time the ${emissionsERC20Config.erc20Config.symbol} deposit happened):`);
+    console.log(`> Info: withdrawing ${emissionsERC20Config.erc20Config.symbol} from Escrow for User, (amount received will be based on User's holdings of ${subgraphData.token.symbol} at the time the ${emissionsERC20Config.erc20Config.symbol} deposit happened):`);
 
     // without subgraph, so potentially inaccurate:
     // const withdrawTransaction = await redeemableERC20ClaimEscrow.withdraw(
@@ -193,16 +193,16 @@ export async function escrowExample() {
     );
     console.info(withdrawTransaction);
     const withdrawReceipt = await withdrawTransaction.wait();
-    console.log(`Result: withdrawal complete (please check your wallet to make sure you have the token, you may need to add the address for the token ${emissionsErc20Address}):`, 'green');
+    console.log(`> Result: withdrawal complete (please check your wallet to make sure you have the token, you may need to add the address for the token ${emissionsErc20Address}):`, 'green');
     console.info(withdrawReceipt);
 
     console.log('------------------------------'); // separator
 
-    console.log('Info: Completed Successfully');
+    console.log('> Info: Completed Successfully');
   } catch (err) {
     console.log('------------------------------'); // separator
-    console.log(`Error:`, 'red', 'bold');
-    console.log(err.message, 'red');
+    console.log(`> Error:`, 'red', 'bold');
+    console.log(`> ${err.message}`, 'red');
     console.warn(err);
   }
 }
