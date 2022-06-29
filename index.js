@@ -84,6 +84,7 @@ export async function escrowExample() {
     const emissionsErc20 = await rainSDK.EmissionsERC20.deploy(signer, emissionsERC20Config);
     // todo claim function will mint another token (in addition to initial supply)??
     const emissionsErc20Address = emissionsErc20.address;
+    // todo do they need to be sent tokens??
     console.log(`> Result: deployed emissionsErc20, with address ${emissionsErc20Address}, and sent you: ${EXAMPLE_ERC20_INITIAL_SUPPLY} Tokens`, 'green')
     console.log(emissionsErc20); // todo check what exists in addition to what is on an erc20, are erc20s through the evm 'factory'?
     console.log('> Info: to see the tokens in your Wallet, add a new token with the address above.', 'red', 'bold');
@@ -119,6 +120,12 @@ export async function escrowExample() {
     console.log('> Info: Waiting 1 minute to let subgraph index data...', 'red');
     // wait for 1 minute so that subgraph has time to index
     await new Promise(resolve => setTimeout(resolve, 60000));
+
+    // todo can do this
+    // The subgraph has a way of getting the last indexed block
+    // And you know which block your tx was in
+    // So you can keep checking until the two match
+
 
     console.log('------------------------------'); // separator
 
