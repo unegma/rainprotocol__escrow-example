@@ -201,8 +201,7 @@ export async function escrowExample() {
     console.log('> Info: Completed Successfully');
   } catch (err) {
     console.log('------------------------------'); // separator
-    console.log(`> Error:`, 'red', 'bold');
-    console.log(`> ${err.message}`, 'red');
+    console.log(`> Error: ${err.message}`, 'red', 'bold');
     console.warn(err);
   }
 }
