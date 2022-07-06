@@ -79,7 +79,7 @@ export async function escrowExample() {
     };
 
     console.log('> ## Section 1 (Admin function): Mint erc20 Token for adding to an Escrow connected to the Sale', 'black', 'bold');
-    console.log('> Info: Deploying new ERC20 with the following state:')
+    console.log('> Info: Deploying new ERC20 with the following parameters:');
     console.log(emissionsERC20Config, 'blue');
     const emissionsErc20 = await rainSDK.EmissionsERC20.deploy(signer, emissionsERC20Config);
     // todo claim function will mint another token (in addition to initial supply)??
